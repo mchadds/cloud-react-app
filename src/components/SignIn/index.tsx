@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
 }));
-// = () => {username.toLowerCase()}
+
 const SignIn = ({ onSignIn }: any) => {
   const classes = useStyles();
 
@@ -79,7 +79,6 @@ const SignIn = ({ onSignIn }: any) => {
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
-            //style={{ textTransform: "lowercase"}}
             variant="outlined"
             margin="normal"
             required
@@ -124,9 +123,9 @@ const SignIn = ({ onSignIn }: any) => {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+            <RouteLink to="/signup">
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </RouteLink>
             </Grid>
           </Grid>
         </form>

@@ -111,7 +111,6 @@ const App = (() => {
                           Log In
                         </Button>
                       </Link>}
-          {/* <div style={{ visibility: !loggedIn ? "hidden" : "visible"}}> */}
           <Link 
             to="/signup"
             style={{ visibility: !loggedIn ? "visible" : "hidden"}}
@@ -119,12 +118,10 @@ const App = (() => {
               <Button variant="contained" color="primary">
                 Sign Up
               </Button>
-            </Link>
-          {/* </div> */}
-          
+            </Link>    
         </header>
         <Route exact path="/">
-          <h1>My NFTs</h1>
+          <h1>Noteworthy NFTs</h1>
           <input
             onChange={e => setFormData({ ...formData, 'name': e.target.value })}
             placeholder="NFT name"

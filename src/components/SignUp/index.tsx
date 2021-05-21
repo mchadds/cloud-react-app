@@ -105,8 +105,9 @@ const SignUp = ({ onSignUp }: any) => {
         </Typography>}
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-                <Grid item xs={12} style={{ visibility: !submittedSignUp ? "visible" : "hidden"}}>
+                <Grid item xs={12}>
                 <TextField
+                    InputProps={{ readOnly: submittedSignUp }}
                     variant="outlined"
                     required
                     fullWidth
@@ -114,11 +115,12 @@ const SignUp = ({ onSignUp }: any) => {
                     label="Username"
                     type="username"
                     id="username"
-                    onChange={e => setUsername(e.target.value)}
+                    onChange={e => setUsername(e.target.value.toLowerCase())}
                 />
                 </Grid>
-                <Grid item xs={12} style={{ visibility: !submittedSignUp ? "visible" : "hidden"}}>
+                <Grid item xs={12}>
                 <TextField
+                    InputProps={{ readOnly: submittedSignUp }}
                     variant="outlined"
                     required
                     fullWidth
@@ -129,8 +131,10 @@ const SignUp = ({ onSignUp }: any) => {
                     onChange={e => setPassword(e.target.value)}
                 />
                 </Grid>
-                <Grid item xs={12} style={{ visibility: !submittedSignUp ? "visible" : "hidden"}}>
+                <Grid item xs={12} //style={{ visibility: !submittedSignUp ? "visible" : "hidden"}}
+                >
                 <TextField
+                    InputProps={{ readOnly: submittedSignUp }}
                     variant="outlined"
                     required
                     fullWidth
@@ -185,9 +189,9 @@ const SignUp = ({ onSignUp }: any) => {
             </Button>}
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
+            <RouteLink to="/signup">
                 Already have an account? Sign in
-              </Link>
+              </RouteLink>
             </Grid>
           </Grid>
         </form>

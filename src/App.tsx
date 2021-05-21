@@ -8,6 +8,7 @@ import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
 // intial form state
 
 interface NFT {
@@ -31,7 +32,7 @@ const App = (() => {
 
   // hook to run after componenent render
   useEffect (() => {
-    //checkLoginState();
+    checkLoginState();
     fetchNFTs();
   }, []);
 
@@ -74,14 +75,17 @@ const App = (() => {
     setFormData({ ...formData, image: file.name });
     await Storage.put(file.name, file);
     fetchNFTs();
-  }
+  };
+
   const checkLoginState = () => {
     Auth.currentAuthenticatedUser()
     .then(session => {
+      debugger;
       console.log('logged in');
       setLoggedIn(true);
     })
     .catch(() => {
+      debugger;
       console.log('not logged in');
       setLoggedIn(false);
     });
@@ -94,7 +98,7 @@ const App = (() => {
     } catch (error) {
       console.log('error signing out: ', error);
     }
-  }
+  };
   
   return (
     <Router>
@@ -107,6 +111,17 @@ const App = (() => {
                           Log In
                         </Button>
                       </Link>}
+          {/* <div style={{ visibility: !loggedIn ? "hidden" : "visible"}}> */}
+          <Link 
+            to="/signup"
+            style={{ visibility: !loggedIn ? "visible" : "hidden"}}
+            >
+              <Button variant="contained" color="primary">
+                Sign Up
+              </Button>
+            </Link>
+          {/* </div> */}
+          
         </header>
         <Route exact path="/">
           <h1>My NFTs</h1>
@@ -146,12 +161,11 @@ const App = (() => {
           </div>
         </Route>
         <Route path='/signin'>
-            <SignIn onSignin={checkLoginState} />
+            <SignIn onSignIn={checkLoginState} />
         </Route>
-        
-        
-       
-        {/* <AmplifySignOut /> */}
+        <Route path='/signup'>
+            <SignUp onSignUp={checkLoginState}/>
+        </Route>
       </div>
     </Router>
   );

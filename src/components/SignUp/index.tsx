@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+
+import { Auth } from 'aws-amplify';
+import { Link as RouteLink, useHistory } from 'react-router-dom';
 
 function Copyright() {
   return (
@@ -46,8 +49,45 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+const SignUp = ({ onSignUp }: any) => {
   const classes = useStyles();
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [confirmationCode, setConfirmationCode] = useState('');
+  const [submittedSignUp, setSubmittedSignUp] = useState(false);
+  const history = useHistory();
+
+  const signUp = async () => {
+    try {
+        const { user } = await Auth.signUp({
+            username,
+            password,
+            attributes: {
+                email 
+            }
+        });
+        debugger;
+        console.log(user);
+        setSubmittedSignUp(true);
+        onSignUp();
+    } catch (error) {
+        console.log('error signing up:', error);
+    }
+  }
+
+  const confirmSignUp = async() => {
+    try {
+        debugger;
+      await Auth.confirmSignUp(username, confirmationCode);
+      history.push('/');
+      onSignUp();
+
+    } catch (error) {
+        console.log('error confirming sign up', error);
+    }
+}
 
   return (
     <Container component="main" maxWidth="xs">
@@ -56,73 +96,93 @@ export default function SignUp() {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        
+        { !submittedSignUp ? <Typography component="h1" variant="h5">
           Sign up
         </Typography>
+        : <Typography component="h1" variant="h5">
+            Awaiting Confirmation Code
+        </Typography>}
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+                <Grid item xs={12} style={{ visibility: !submittedSignUp ? "visible" : "hidden"}}>
+                <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="username"
+                    label="Username"
+                    type="username"
+                    id="username"
+                    onChange={e => setUsername(e.target.value)}
+                />
+                </Grid>
+                <Grid item xs={12} style={{ visibility: !submittedSignUp ? "visible" : "hidden"}}>
+                <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    onChange={e => setPassword(e.target.value)}
+                />
+                </Grid>
+                <Grid item xs={12} style={{ visibility: !submittedSignUp ? "visible" : "hidden"}}>
+                <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    onChange={e => setEmail(e.target.value)}
+                />
+            </Grid>
+            
+            <Grid item xs={12} style={{ visibility: submittedSignUp ? "visible" : "hidden"}}>
               <TextField
-                autoComplete="fname"
-                name="firstName"
                 variant="outlined"
                 required
                 fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
+                name="confirmationcode"
+                label="Confirmation Code"
+                type="code"
+                id="confirmationCode"
+                onChange={e => setConfirmationCode(e.target.value)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-            </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
-            </Grid>
+            </Grid> */}
           </Grid>
-          <Button
-            type="submit"
+          { !submittedSignUp ? <Button
+            //type="submit"
+            id="signUpButton"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={signUp}
           >
             Sign Up
-          </Button>
+          </Button> : 
+          <Button
+            //type="submit"
+            id="confirmCodeButton"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            onClick={confirmSignUp}
+            >
+            Submit Confirmation Code
+            </Button>}
           <Grid container justify="flex-end">
             <Grid item>
               <Link href="#" variant="body2">
@@ -138,3 +198,5 @@ export default function SignUp() {
     </Container>
   );
 }
+
+export default SignUp;

@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
 }));
-
-const SignIn = ({ onSignin}: any) => {
+// = () => {username.toLowerCase()}
+const SignIn = ({ onSignIn }: any) => {
   const classes = useStyles();
 
   const [username, setUsername] = useState('');
@@ -61,9 +61,8 @@ const SignIn = ({ onSignin}: any) => {
       try {
           const user = await Auth.signIn(username, password);
           history.push('/');
-          onSignin();
+          onSignIn();
       } catch (error) {
-          debugger;
           console.log('error signing in ', error);
       } 
   }
@@ -80,6 +79,7 @@ const SignIn = ({ onSignin}: any) => {
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
+            //style={{ textTransform: "lowercase"}}
             variant="outlined"
             margin="normal"
             required
@@ -89,7 +89,7 @@ const SignIn = ({ onSignin}: any) => {
             name="username"
             value={username}
             autoFocus
-            onChange={e => setUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value.toLowerCase())}
           />
           <TextField
             variant="outlined"
@@ -110,7 +110,7 @@ const SignIn = ({ onSignin}: any) => {
             //type="submit"
             fullWidth
             variant="contained"
-            //className={classes.submit}
+            className={classes.submit}
             id="signInButton"
             color="primary"
             onClick={signIn}

@@ -144,6 +144,7 @@ const App = (() => {
           <button onClick={createNFT}>Create NFT</button>
           <div style={{marginBottom: 30}}>
             {
+              // change
               NFTs.map((nft: NFT) => (
                 <div key={nft.id || nft.name}>
                   <h2>{nft.name}</h2>

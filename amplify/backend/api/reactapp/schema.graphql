@@ -1,0 +1,16 @@
+type NFT 
+@model 
+@auth(
+  rules: [
+    { allow: private },
+    { allow: public, operations: [read], provider: iam}
+  ]
+) {
+  id: ID!
+  name: String!
+  description: String
+  image: String
+  creator: String!
+  soldfor: Float
+  askingprice: Float
+}

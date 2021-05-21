@@ -6,5 +6,32 @@
       "dependsOn": [],
       "customAuth": false
     }
+  },
+  "api": {
+    "reactapp": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authcloudreactappdfa525ab"
+            }
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "storage": {
+    "thumbnail": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
   }
 }

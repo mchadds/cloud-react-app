@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignIn = ({ onSignIn }: any) => {
+const SignIn = ( { onSignIn }: (() => void) | any) => {
   const classes = useStyles();
 
   const [username, setUsername] = useState('');

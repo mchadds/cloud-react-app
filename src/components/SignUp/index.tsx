@@ -189,7 +189,7 @@ const SignUp = ({ onSignUp }: any) => {
             </Button>}
           <Grid container justify="flex-end">
             <Grid item>
-            <RouteLink to="/signup">
+            <RouteLink to="/signin">
                 Already have an account? Sign in
               </RouteLink>
             </Grid>

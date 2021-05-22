@@ -4,31 +4,72 @@ import { withAuthenticator, AmplifyAuthenticator, AmplifySignUp, AmplifySignOut 
 import { API, Storage, Auth } from 'aws-amplify';
 import { listNFTs } from './graphql/queries';
 import { createNFT as createNFTMutation, deleteNFT as deleteNFTMutation } from './graphql/mutations';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api'
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
+import Album from './components/Album';
+import NFT from './interfaces';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import AddNFT from './components/AddNFT';
+import { makeStyles } from '@material-ui/core/styles';
+import Close from '@material-ui/icons/Close';
+
+const useStyles = makeStyles((theme) => ({
+  close: {
+    cursor:'pointer',
+   // height:'20rem',
+   //width:'20rem',
+    position:'absolute',
+    top:'7px',
+    right:'10px',
+    backgroundColor: 'rgb(231, 120, 120)'
+    // &:'after', &:'before' {
+    // content:"",
+    // height:'20px',
+    // width:'20px',
+    // border-top:'1px' solid #000,
+    // position:'absolute',
+     // top:7px,
+    //  right:-8px,
+     // @include rotate(-45deg)
+    // }
+  },
+  paper: {
+    marginTop: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: 'green',
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
+
 // intial form state
-
-interface NFT {
-  id?: string
-  name: string,
-  description: string,
-  image?: string,
-  creator: string
-  soldfor?: number
-  askingprice?: number
-}
-
 const initialFormState: NFT = { name: '', description: '', creator: '' };
 
 
 const App = (() => {
+  const classes = useStyles();
   // set intital state of app component
-  const [NFTs, setNFTs] = useState<NFT[] | []>([]);
+  const [NFTs, setNFTs] = useState<NFT[]>([]);
   const [formData, setFormData] = useState(initialFormState);
   const [loggedIn, setLoggedIn] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
 
   // hook to run after componenent render
   useEffect (() => {
@@ -47,20 +88,34 @@ const App = (() => {
       }
       return nft;
     }))
-    setNFTs(apiData.data.listNFTs.items)
+    return setNFTs(apiData.data.listNFTs.items)
   };
 
   // create NFT via api call
-  const createNFT = async () => {
-    if (!formData || !formData.description) return;
-    await API.graphql({ query: createNFTMutation, variables: { input: formData} });
-    if (formData.image) {
-      const image: string = await Storage.get(formData.image) as string;
-      formData.image= image;
+  const createNFT = async (nft: NFT) => {
+    debugger;
+    if (!nft || !nft.description) return;
+      await API.graphql({ query: createNFTMutation, variables: { input: nft} });
+    if (nft.image) {
+      const image: string = await Storage.get(nft.image) as string;
+      nft.image= image;
     }
     setNFTs([ ...NFTs, formData]);
-    setFormData(initialFormState);
+    setShowModal(false);
   };
+
+   // create NFT via api call
+  //  const createNFT = async () => {
+  //   if (!formData || !formData.description) return;
+  //   await API.graphql({ query: createNFTMutation, variables: { input: formData} });
+  //   if (formData.image) {
+  //     const image: string = await Storage.get(formData.image) as string;
+  //     formData.image= image;
+  //   }
+  //   setNFTs([ ...NFTs, formData]);
+  //   setShowModal(false);
+  //   //setFormData(initialFormState);
+  // };
 
   // delete a NFT via api call
   const deleteNFT = async (id: string | undefined) => {
@@ -80,12 +135,10 @@ const App = (() => {
   const checkLoginState = () => {
     Auth.currentAuthenticatedUser()
     .then(session => {
-      debugger;
       console.log('logged in');
       setLoggedIn(true);
     })
     .catch(() => {
-      debugger;
       console.log('not logged in');
       setLoggedIn(false);
     });
@@ -99,7 +152,7 @@ const App = (() => {
       console.log('error signing out: ', error);
     }
   };
-  
+
   return (
     <Router>
       <div className="App">
@@ -122,7 +175,30 @@ const App = (() => {
         </header>
         <Route exact path="/">
           <h1>Noteworthy NFTs</h1>
-          <input
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => setShowModal(true)} 
+            style={{ visibility: loggedIn ? "visible" : "hidden"}}>
+            Add NFT
+          </Button>
+          <Dialog open={showModal}
+          
+          // open={this.state.open} onEnter={console.log('Hey.')}
+          >
+            <Button 
+              variant="contained"
+              className={classes.close}
+              onClick={() => setShowModal(false)}
+            >
+              <Close />
+            </Button>
+            {/* <DialogTitle>Hello CodeSandbox</DialogTitle> */}
+            <DialogContent>
+              < AddNFT createNFT={createNFT}/>
+              Start editing to see some magic happen!</DialogContent>
+            </Dialog>
+          {/* <input
             onChange={e => setFormData({ ...formData, 'name': e.target.value })}
             placeholder="NFT name"
             value={formData.name}
@@ -141,21 +217,10 @@ const App = (() => {
             type="file"
             onChange={onChange}
           />
-          <button onClick={createNFT}>Create NFT</button>
-          <div style={{marginBottom: 30}}>
-            {
-              NFTs.map((nft: NFT) => (
-                <div key={nft.id || nft.name}>
-                  <h2>{nft.name}</h2>
-                  <p>{nft.description}</p>
-                  <button onClick={() => deleteNFT(nft.id)}>Delete NFT</button>
-                  {
-                    nft.image && <img src={nft.image} style={{width: 400}} />
-                  }
-                </div>
-              ))
-            }
-          </div>
+          <button onClick={createNFT}>Create NFT</button> */}
+          <Album 
+          nfts={NFTs}
+          />
         </Route>
         <Route path='/signin'>
             <SignIn onSignIn={checkLoginState} />

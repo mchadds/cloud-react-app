@@ -20,7 +20,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Close from '@material-ui/icons/Close';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import ViewNFT from '../ViewNFT';
-import NFTCard from '../NFTCard';
+
 
 // import { API, Storage } from 'aws-amplify';
 // import { listNFTs } from '../../graphql/queries';
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   cardMedia: {
-    //height: '70%',
+    height: '70%',
     paddingTop: '100%', // 16:9
   },
   cardContent: {
@@ -79,80 +79,57 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Album = ( { nfts } : NFT[] | any) => {
+// why wont this display the card ? (nft : NFT | any)
+const NFTCard = (props: any) => {
+  debugger;
   const classes = useStyles();
-
   const [showModal, setShowModal] = useState(false);
   
   return (
     <React.Fragment>
-      <CssBaseline />
-      <main>
-        <Container className={classes.cardGrid} maxWidth="md">
-          {/* End hero unit */}
-          <Grid container spacing={4}>
-            {nfts.map((nft: NFT) => (
-              <NFTCard key={nft.id} nft={nft} //index={nfts.indexOf(nft)}
-              />
-              // <Grid item key={nfts.indexOf(nft)} xs={12} sm={6} md={4}>
-              //   <Card className={classes.card}
-              //     onClick={() => setShowModal(true)}>
-              //     <CardMedia
-              //       className={classes.cardMedia}
-              //       image={nft.image}
-              //       title={nft.name}
-              //     />
-              //     <CardContent className={classes.cardContent}>
-              //       <Typography gutterBottom variant="h5" component="h2">
-              //         {nft.name}
-              //       </Typography>
-              //       <Typography>
-              //         {nft.creator}
-              //       </Typography>
-              //     </CardContent>
-              //     <CardActions>
-              //       {/* <Button size="small" color="primary">
-              //         View
-              //       </Button>
-              //       <Button size="small" color="primary">
-              //         Edit
-              //       </Button> */}
-              //     </CardActions>
-              //   </Card>
-              // </Grid>
-            ))}
-          </Grid>
-        </Container>
-        
-      </main>
-      {/* Footer */}
-      <footer className={classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom>
-          Footer
-        </Typography>
-        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-          Something here to give the footer a purpose!
-        </Typography>
-        <Copyright />
-      </footer>
-      {/* End footer */}
-      {/* <Dialog open={showModal}
-          
-          // open={this.state.open} onEnter={console.log('Hey.')}
-          >
-            <Button 
-              variant="contained"
-              className={classes.close}
-              onClick={() => setShowModal(false)}
-            >
-              <Close />
+      {/* <CssBaseline /> */}
+      {/* <main> */}
+        <Grid item key={props.nft.id} xs={12} sm={6} md={4}>
+          <Card className={classes.card}
+            onClick={(e) => setShowModal(true)}>
+            <CardMedia
+            className={classes.cardMedia}
+            image={props.nft.image}
+            title={props.nft.name}
+            />
+            <CardContent className={classes.cardContent}>
+            <Typography gutterBottom variant="h5" component="h2">
+                {props.nft.name}
+            </Typography>
+            <Typography>
+                {props.nft.creator}
+            </Typography>
+            </CardContent>
+            {/* <CardActions> */}
+            {/* <Button size="small" color="primary">
+                View
             </Button>
-            <DialogContent>
-              <ViewNFT />
-            </DialogContent>
-            </Dialog> */}
+            <Button size="small" color="primary">
+                Edit
+            </Button> */}
+            {/* </CardActions> */}
+          </Card>
+        </Grid>
+      {/* </main> */}
+      <Dialog open={showModal}>
+        <Button 
+            variant="contained"
+            className={classes.close}
+            onClick={() => setShowModal(false)}
+        >
+            <Close />
+        </Button>
+        <DialogContent>
+            < ViewNFT nft={props.nft}/>
+        </DialogContent>
+      </Dialog>
     </React.Fragment>
   );
 }
 
-export default Album;
+export default NFTCard;
